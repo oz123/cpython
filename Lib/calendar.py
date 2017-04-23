@@ -380,16 +380,25 @@ class HTMLCalendar(Calendar):
     """
 
     # CSS classes for the day <td>s
-    cssclasses = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+    cssclasses = (["mon", ], ["tue", ], ["wed", ], ["thu", ], ["fri", ],
+                  ["sat", ], ["sun", ])
+    noday_classes = ("noday", )
+    weekday_head_styles = cssclasses
+    month_head_styles = ("month",)
+    month_styles = ("month",)
+    year_head_styles = ("year",)
+    year_styles = ("year",)
 
     def formatday(self, day, weekday):
-        """
+        """ 
         Return a day as a table cell.
         """
         if day == 0:
-            return '<td class="noday">&nbsp;</td>' # day outside month
+            # day outside month
+            return '<td class="%s">&nbsp;</td>' % self.noday_classes
         else:
-            return '<td class="%s">%d</td>' % (self.cssclasses[weekday], day)
+            return '<td class="%s">%d</td>' % (
+                ' '.join(self.cssclasses[weekday]), day)
 
     def formatweek(self, theweek):
         """
@@ -402,7 +411,8 @@ class HTMLCalendar(Calendar):
         """
         Return a weekday name as a table header.
         """
-        return '<th class="%s">%s</th>' % (self.cssclasses[day], day_abbr[day])
+        return '<th class="%s">%s</th>' % (
+            " ".join(self.weekday_head_styles[day]), day_abbr[day])
 
     def formatweekheader(self):
         """
@@ -419,7 +429,8 @@ class HTMLCalendar(Calendar):
             s = '%s %s' % (month_name[themonth], theyear)
         else:
             s = '%s' % month_name[themonth]
-        return '<tr><th colspan="7" class="month">%s</th></tr>' % s
+        return '<tr><th colspan="7" class="%s">%s</th></tr>' % (
+            " ".join(self.month_head_styles), s)
 
     def formatmonth(self, theyear, themonth, withyear=True):
         """
@@ -427,7 +438,8 @@ class HTMLCalendar(Calendar):
         """
         v = []
         a = v.append
-        a('<table border="0" cellpadding="0" cellspacing="0" class="month">')
+        a('<table border="0" cellpadding="0" cellspacing="0" class="%s">' % (
+          " ".join(self.month_styles)))
         a('\n')
         a(self.formatmonthname(theyear, themonth, withyear=withyear))
         a('\n')
@@ -447,9 +459,11 @@ class HTMLCalendar(Calendar):
         v = []
         a = v.append
         width = max(width, 1)
-        a('<table border="0" cellpadding="0" cellspacing="0" class="year">')
+        a('<table border="0" cellpadding="0" cellspacing="0" class="%s">' %
+          ' '.join(self.year_head_styles))
         a('\n')
-        a('<tr><th colspan="%d" class="year">%s</th></tr>' % (width, theyear))
+        a('<tr><th colspan="%d" class="%s">%s</th></tr>' % (
+            width, " ".join(self.year_styles), theyear))
         for i in range(January, January+12, width):
             # months in this row
             months = range(i, min(i+width, 13))
